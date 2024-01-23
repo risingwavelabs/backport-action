@@ -35,6 +35,7 @@ export type Config = {
   copy_assignees: boolean;
   copy_requested_reviewers: boolean;
   experimental: Experimental;
+  pull_number: number;
 };
 
 type DeprecatedExperimental = {
@@ -104,7 +105,10 @@ export class Backport {
 
       if (repo === undefined) throw new Error("No repository defined!");
 
-      const pull_number = this.github.getPullNumber();
+      const pull_number =
+        this.config.pull_number === 0
+          ? this.github.getPullNumber()
+          : this.config.pull_number;
       const mainpr = await this.github.getPullRequest(pull_number);
 
       if (!(await this.github.isMerged(mainpr))) {
