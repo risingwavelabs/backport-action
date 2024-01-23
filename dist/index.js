@@ -49,7 +49,7 @@ const github_1 = __nccwpck_require__(5928);
 const git_1 = __nccwpck_require__(3374);
 const utils = __importStar(__nccwpck_require__(918));
 const experimentalDefaults = {
-    detect_merge_method: false,
+    detect_merge_method: true,
 };
 exports.experimentalDefaults = experimentalDefaults;
 var Output;
@@ -71,7 +71,9 @@ class Backport {
                 const payload = this.github.getPayload();
                 const owner = this.github.getRepo().owner;
                 const repo = (_b = (_a = payload.repository) === null || _a === void 0 ? void 0 : _a.name) !== null && _b !== void 0 ? _b : this.github.getRepo().repo;
-                const pull_number = this.github.getPullNumber();
+                const pull_number = this.config.pull_number === 0
+                    ? this.github.getPullNumber()
+                    : this.config.pull_number;
                 const mainpr = yield this.github.getPullRequest(pull_number);
                 if (!(yield this.github.isMerged(mainpr))) {
                     const message = "Only merged pull requests can be backported.";
@@ -939,6 +941,7 @@ function run() {
         const copy_milestone = core.getInput("copy_milestone");
         const copy_requested_reviewers = core.getInput("copy_requested_reviewers");
         const experimental = JSON.parse(core.getInput("experimental"));
+        const pull_number = core.getInput("pull_number");
         if (merge_commits != "fail" && merge_commits != "skip") {
             const message = `Expected input 'merge_commits' to be either 'fail' or 'skip', but was '${merge_commits}'`;
             console.error(message);
@@ -965,6 +968,7 @@ function run() {
             copy_milestone: copy_milestone === "true",
             copy_requested_reviewers: copy_requested_reviewers === "true",
             experimental: Object.assign(Object.assign({}, backport_1.experimentalDefaults), experimental),
+            pull_number: pull_number === "" ? 0 : +pull_number,
         };
         const backport = new backport_1.Backport(github, config, git);
         return backport.run();

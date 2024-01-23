@@ -86,6 +86,10 @@ inputs:
       Note that the pull request's headref is excluded automatically.
       Can be used in addition to backport labels.
       By default, only backport labels are used to specify the target branches.
+  pull_number:
+    description: >
+      Explicitly specify the PR number to cherry pick
+    default: ''
 
 outputs:
   created_pull_numbers:

@@ -23,6 +23,7 @@ async function run(): Promise<void> {
   const copy_milestone = core.getInput("copy_milestone");
   const copy_requested_reviewers = core.getInput("copy_requested_reviewers");
   const experimental = JSON.parse(core.getInput("experimental"));
+  const pull_number = core.getInput("pull_number");
 
   if (merge_commits != "fail" && merge_commits != "skip") {
     const message = `Expected input 'merge_commits' to be either 'fail' or 'skip', but was '${merge_commits}'`;
@@ -53,6 +54,7 @@ async function run(): Promise<void> {
     copy_milestone: copy_milestone === "true",
     copy_requested_reviewers: copy_requested_reviewers === "true",
     experimental: { ...experimentalDefaults, ...experimental },
+    pull_number: pull_number === "" ? 0 : +pull_number,
   };
   const backport = new Backport(github, config, git);
 
